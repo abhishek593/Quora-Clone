@@ -1,0 +1,57 @@
+{% extends 'questions/user_base.html' %}
+{% block title %}
+Feed | {{ user_name }}
+{% endblock title %}
+
+{% block content %}
+    {% if question_card %}
+        <div class="container">
+        {% for question_info in question_card %}
+        <div style="align-content:center; width:60rem" class="card text-center ml-auto">
+          <div class="card-header">
+              {{ question_info.question.question_title }}
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ question_info.question.question_description }}</h5>
+            <p class="card-text">{{ question_info.answer.answer_text|truncatechars:20 }}</p>
+            <a href="{% url 'questions:question_card' question_info.question.question_title %}" class="btn btn-primary">Check Full Question</a>
+          </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+
+    <div class="modal fade" id="ask-user-to-follow-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Follow Some People</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Your feed is currently empty.
+          </div>
+            <div class="modal-body">
+            Follow some people to improve your feed.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <a href="{% url 'questions:get_all_users' %}"><button type="button" class="btn btn-primary">Follow</button></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+    <script>
+    $(document).ready(function(){
+        $("#ask-user-to-follow-modal").modal('show');
+    });
+    </script>
+    {% endif %}
+{% endblock content %}

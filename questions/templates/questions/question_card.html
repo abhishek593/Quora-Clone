@@ -1,0 +1,253 @@
+{% extends 'questions/user_base.html' %}
+{% block title %}
+    {% load custom_filters %}
+    {% if errors %}
+    {{ errors }}
+    {% else %}
+            {{ ques.question_title }}
+    {% endif %}
+{% endblock title %}
+
+{% block content %}
+    <a class="btn btn-primary bg-info btn-lg" href="{% url 'questions:feed' %}" role="button">Back to Feed</a>
+<div class="container" >
+
+    <div class="card" style="padding-bottom: 20px; padding-left: 20px; margin-bottom: 30px">
+            <div class="row">
+                <div class="col-sm-8">
+            <div>
+                Question Title - {{ question.question_title }}
+            </div>
+            <div>
+                Question Description - {{ question.question_description }}
+            </div>
+                    <div>
+                Asked By - <a href="{% url 'accounts:profile' question.question_asker.username %}">{{ question.question_asker.get_full_name }}</a>
+            </div>
+                    </div>
+                <div class="col-sm-4">
+            <button type="button" class="btn btn-dark btn-sm" data-toggle="modal" data-target="#questionDetailModal">
+                      Show Question Details
+            </button>
+                    </div>
+            </div>
+
+
+        <div class="row">
+            <form action="" method="GET">
+            <button value="1" type="submit" name="queupvote" class="btn btn-light">Upvote Question</button>
+                </form>
+            <form action="." method="GET">
+            <button type="submit" value="-1" name="quedownvote" class="btn btn-light">Downvote Question</button>
+                </form>
+        {% if not request.GET.ans_number %}
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+
+<div class="row">
+            <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#questionUpvoterModal">
+                      View Question Upvoters
+            </button>
+            <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#questionDownvoterModal">
+                      View Question Downvoters
+            </button>
+
+            <div class="modal fade" id="questionUpvoterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog"  role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    {% for queupvoter in question.get_question_upvoters %}
+                        <p><a href="{% url 'accounts:profile' queupvoter.username %}">{{ queupvoter.get_full_name }}</a></p>
+                      {% endfor %}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="modal fade" id="questionDownvoterModal{{forloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" id="{{forloop.counter}}" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    {% for quedownvoter in question.get_question_downvoters %}
+                        <p><a href="{% url 'accounts:profile' quedownvoter.username %}">{{ quedownvoter.get_full_name }}</a></p>
+                      {% endfor %}
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% for ans in answer %}
+<div class="container">
+        <div class="card" style="padding: 20px; margin-bottom: 20px">
+            <div class="row" style="padding-top: 20px">
+                <div class="col-sm-8">
+                <div>
+                    Answered by - <a href="{% url 'accounts:profile' ans.answerer.username %}">{{ ans.answerer.get_full_name }}</a>
+                </div>
+                <div>
+                    {{ ans.answer_text }}
+                </div>
+                </div>
+                <div class="col-sm-4">
+            <button type="button" class="btn btn-dark btn-sm" data-toggle="modal" data-target="#answerDetailModal{{ans.answerer.id}}">
+                      Show Answer Details
+            </button>
+                    </div>
+            </div>
+
+            <div class="row">
+            <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#answerUpvoterViewModal{{ forloop.counter }}">
+                      View Answer Upvoters
+            </button>
+            <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#answerDownvoterViewModal{{ forloop.counter }}">
+                      View Answer Downvoters
+            </button>
+            </div>
+
+            <div class="row">
+            <form action="" method="GET">
+                <input name="ans_number" type="hidden" value="{{ forloop.counter }}">
+            <button value="1" type="submit" name="ansupvote" class="btn btn-light">Upvote Answer</button>
+                </form>
+            <form action="." method="GET">
+                <input name="ans_number" type="hidden" value="{{ forloop.counter }}">
+            <button type="submit" value="-1" name="ansdownvote" class="btn btn-light">Downvote Answer</button>
+                </form>
+
+            {% if request.GET.ans_number|changeToInt == forloop.counter %}
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% endif %}
+
+        </div>
+
+            <div class="modal fade" id="answerUpvoterViewModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" id="{{forloop.counter}}" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    {% for ansupvoter in ans.get_answer_upvoters %}
+                        <p><a href="{% url 'accounts:profile' ansupvoter.username %}">{{ ansupvoter.get_full_name }}</a></p>
+                      {% endfor %}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade" id="answerDownvoterViewModal{{forloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" id="{{forloop.counter}}" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    {% for ansdownvoter in ans.get_answer_downvoters %}
+                        <p><a href="{% url 'accounts:profile' ansdownvoter.username %}">{{ ansdownvoter.get_full_name }}</a></p>
+                      {% endfor %}
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal fade" id="answerDetailModal{{ans.answerer.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" id="{{ans.answerer.id}}" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+      <div>Answered On - {{ ans.timestamp }}</div>
+          <div><a href="{% url 'accounts:profile' ans.answerer.username %}">{{ ans.answerer.get_full_name }}</a></div>
+      <div>Last Updated - {{ ans.updated }}</div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endfor %}
+
+
+    <div class="modal fade" id="questionDetailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+      <div>Asked On - {{ question.timestamp }}</div>
+      <div>Last Updated - {{ question.updated }}</div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

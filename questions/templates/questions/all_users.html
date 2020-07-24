@@ -1,0 +1,12 @@
+{% extends 'questions/user_base.html' %}
+{% block title %}
+    QuoraClone | All users
+{% endblock title %}
+
+{% block content %}
+    <div class="container">
+    {% for user in users %}
+        <p><a href="{% url 'accounts:profile' user.username %}">{{ user.get_full_name }}</a></p>
+    {% endfor %}
+    </div>
+{% endblock content %}

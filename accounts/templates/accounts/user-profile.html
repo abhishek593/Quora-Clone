@@ -1,0 +1,126 @@
+{% extends 'questions/user_base.html' %}
+
+{% block title %}
+    {% if errors is not None %}
+        Not Found
+    {% else %}
+        {{ user.get_full_name}}
+    {% endif %}
+{% endblock title %}
+
+{% block content %}
+
+    {% if errors is not None %}
+        <blockquote class="blockquote">
+            <p class="mb-0">{{ errors }}</p>
+        </blockquote>
+    {% else %}
+
+
+        <div class="jumbotron">
+        <div class="container">
+        <h1 class="display-4">{{ user.get_full_name }}</h1>
+        <p class="lead">Username - {{ user.username }}</p>
+                <div class="row">
+            <div class="col-sm-8">
+                <p>{{ user.description }}</p>
+            </div>
+
+            <div class="card col-sm-4" style="width: 18rem;">
+              <div class="card-header">
+                Your Stats
+              </div>
+                <ul class="list-group">
+                {% if request.user.is_authenticated %}
+                    {% if request.user.username != user.username %}
+                        {% if user in request.user.get_following %}
+                            <form action="" method="get">
+                                <input type="hidden" name="unfollow" value="unfollow">
+                                <button class="btn btn-primary btn-lg" type="submit">Unfollow</button>
+                            </form>
+
+                        {% else %}
+                            <form action="" method="get">
+                                <input type="hidden" name="follow" value="follow">
+                                <button class="btn btn-primary btn-lg" type="submit">Follow</button>
+                            </form>
+
+                        </li>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                  <li class="list-group-item">Followers   {{ followers_count }}</li>
+                  <li class="list-group-item">Following   {{ following_count }}</li>
+                    <li class="list-group-item">Joined on {{ user.created_at }}</li>
+                    <li class="list-group-item">Born on {{ user.date_of_birth }}</li>
+                </ul>
+            </div>
+            </div>
+            <a class="btn btn-primary btn-lg" href="#" role="button">Questions</a>
+            <a class="btn btn-primary btn-lg" href="#" role="button">Answers</a>
+            <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#followersModal">
+              Show Followers
+            </button>
+            <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#followingModal">
+              Show Following
+            </button>
+            <a class="btn btn-primary bg-info btn-lg" href="{% url 'questions:feed' %}" role="button">Back to Feed</a>
+            </div>
+
+
+
+<div class="modal fade" id="followersModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      {% if user.get_followers %}
+       {% for person in user.get_followers %}
+           <div><a href="{% url 'accounts:profile' person.username %}">{{ person.get_full_name }}</a></div>
+       {% endfor %}
+      {% else %}
+          {{ user.get_full_name }} has no followers.
+      {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        <div class="modal fade" id="followingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      {% if user.get_following %}
+        {% for person in user.get_following %}
+           <div><a href="{% url 'accounts:profile' person.username %}">{{ person.get_full_name }}</a></div>
+       {% endfor %}
+      {% else %}
+          {{ user.get_full_name }} is not following anyone.
+      {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+        </div>
+
+    {% endif %}
+{% endblock content %}
